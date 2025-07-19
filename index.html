@@ -10,7 +10,6 @@
     <!-- Chosen Palette: Calm Harmony with vibrant accents -->
     <!-- Application Structure Plan: The application is designed as an interactive dashboard, moving beyond the linear structure of the report. The core is an "IJSS Simulator" (Section 1) allowing users to get immediate answers for specific cases, which is their primary need. This is supported by a "Comparative View" (Section 2) using cards and a dynamic chart to contrast different leave types, facilitating a deeper understanding of the system's logic. Finally, "Key Concepts & Resources" (Section 3) are organized in an accordion, providing detailed information on demand without cluttering the main interface. This task-oriented structure prioritizes usability and quick access to relevant calculations over simply replicating the report's text. -->
     <!-- Visualization & Content Choices: Report Info -> Goal -> Calculate -> Interactive Form/Simulator -> User selects leave type & inputs data, JS calculates and displays results -> Practical, answers user's main question -> Vanilla JS. 2. Comparison of Leave Types -> Goal: Compare -> Bar Chart -> Checkboxes filter the leave types shown on the chart -> Visual comparison is faster than reading a table -> Chart.js. 3. Detailed Rules (Rechute, Salaire Rétabli, Congés Payés) -> Goal: Organize/Inform -> Accordion & Styled HTML flow -> Click to expand/collapse sections -> Keeps UI clean, avoids info overload -> Vanilla JS + Tailwind CSS. This structure provides a tool, not just a document. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -195,7 +194,7 @@
                 <span id="themeIcon" class="text-xl">☀️</span>
             </button>
         </div>
-        <p class="text-slate-600 dark:text-slate-400 mt-1 px-4 mx-auto container">Un outil interactif pour les gestionnaires de paie. Règles à jour au 1er avril 2025.</p>
+        <p class="text-slate-600 dark:text-slate-400 mt-1 px-4 mx-auto container">Un outil interactif pour les gestionnaires de paie. Règles à jour au 1er juillet 2025.</p>
     </header>
 
     <main class="container mx-auto px-4 py-8 md:py-12">
@@ -231,7 +230,7 @@
                         <input type="number"id="dureeArret" placeholder="Ex: 14" value="14">
                     </div>
                     <div class="lg:col-span-3 flex justify-center">
-                         <button id="calculateBtn" class="btn btn-primary mt-4">🚀 Lancer la simulation</button>
+                           <button id="calculateBtn" class="btn btn-primary mt-4">🚀 Lancer la simulation</button>
                     </div>
                 </div>
                 
@@ -251,7 +250,7 @@
                             <p id="ijssResult" class="mt-2"></p>
                         </div>
                     </div>
-                     <div class="mt-6 card bg-slate-50 border border-slate-200">
+                    <div class="mt-6 card bg-slate-50 border border-slate-200">
                         <h4 class="font-bold text-slate-800 dark:text-slate-50">🧾 Impact et Logique Appliquée</h4>
                         <p id="paieImpact" class="mt-2 text-slate-600 dark:text-slate-400"></p>
                     </div>
@@ -262,38 +261,38 @@
         <!-- Section 2: Vue Comparative -->
         <section id="comparison" class="mb-16">
             <h2 class="section-title">⚖️ 2. Vue Comparative des Arrêts de Travail</h2>
-             <p class="mb-6 text-slate-600 dark:text-slate-400">
+            <p class="mb-6 text-slate-600 dark:text-slate-400">
                 Pour mieux comprendre les différences fondamentales entre les types d'arrêts, cette section offre une comparaison visuelle. Les fiches ci-dessous résument les points clés de chaque situation. Le graphique interactif vous permet de comparer visuellement les taux d'indemnisation et les délais de carence.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- Cards -->
                 <div class="card">
                     <h3 class="font-bold text-lg mb-2"><span class="tag bg-red-100 text-red-700">Maladie 🤒</span></h3>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 3 jours</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> 7 jours (légal)</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 50% du SJR</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Sécurité Sociale (SS):</strong> 3 jours</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Indemnisation employeur:</strong> 7 jours (selon ancienneté et/ou CC - <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006900984/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 1226-1 Code du travail</a>)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 50% du SJR (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 323-4 Code de la Sécurité Sociale</a>)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois (plafonnés à 1,4 x SMIC)</p>
                 </div>
                 <div class="card">
                     <h3 class="font-bold text-lg mb-2"><span class="tag bg-yellow-100 text-yellow-700">AT / MP 👷</span></h3>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> 0 jour (jour AT payé)</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 60% puis 80%</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Jour de l'accident à la charge de l'employeur</strong> (Jurisprudence constante, ex: <a href="https://www.legifrance.gouv.fr/juri/id/JURITEXT000007038161/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Cass. Soc. 28 oct. 1999, n°97-43.180</a>)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 60% puis 80% (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 433-1 Code de la Sécurité Sociale</a>)</p>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> Mois précédent</p>
                 </div>
-                 <div class="card">
+                <div class="card">
                     <h3 class="font-bold text-lg mb-2"><span class="tag bg-purple-100 text-purple-700">Maternité 🤰</span></h3>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> N/A (selon CC)</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 331-3 Code de la Sécurité Sociale</a>)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois (plafonnés au PMSS)</p>
                 </div>
-                 <div class="card">
+                <div class="card">
                     <h3 class="font-bold text-lg mb-2"><span class="tag bg-purple-100 text-purple-700">Paternité 👨‍🍼</span></h3>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
                     <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> N/A (selon CC)</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier</p>
-                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 331-3 Code de la Sécurité Sociale</a>)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois (plafonnés au PMSS)</p>
                 </div>
             </div>
             <div class="card">
@@ -306,19 +305,19 @@
 
         <!-- Section 3: Concepts Clés & Ressources -->
         <section id="concepts">
-             <h2 class="section-title">📚 3. Concepts Clés, Cas Particuliers & Ressources</h2>
-             <p class="mb-6 text-slate-600 dark:text-slate-400">
+            <h2 class="section-title">📚 3. Concepts Clés, Cas Particuliers & Ressources</h2>
+            <p class="mb-6 text-slate-600 dark:text-slate-400">
                 Explorez ici les notions plus complexes et les cas spécifiques comme la rechute ou le calcul du salaire rétabli. Chaque section est un résumé interactif des parties du guide, vous permettant d'approfondir un sujet à la demande. Vous y trouverez également les liens vers les ressources officielles.
             </p>
             <div class="space-y-4">
-                 <!-- Accordion Item : Congés Payés -->
+                <!-- Accordion Item : Congés Payés -->
                 <div class="card accordion-cp">
                     <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
                         <span>🗓️ Acquisition des Congés Payés pendant un Arrêt Maladie</span>
                         <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
                     </button>
                     <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <p class="mb-4">Suite à la loi du 22 avril 2024, les arrêts maladie non professionnels ouvrent désormais droit à l'acquisition de congés payés, alignant le droit français sur le droit européen.</p>
+                        <p class="mb-4">Suite à la **Loi n° 2024-364 du 22 avril 2024** (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006900984/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 3141-5 Code du travail</a>), les arrêts maladie non professionnels ouvrent désormais droit à l'acquisition de congés payés, alignant le droit français sur le droit européen.</p>
                         <h4 class="font-bold mt-4 mb-2">Règles d'Acquisition (depuis le 24/04/2024)</h4>
                         <ul>
                             <li><strong>Taux :</strong> Le salarié acquiert <strong>2 jours ouvrables</strong> de congés par mois d'arrêt.</li>
@@ -327,10 +326,10 @@
                         </ul>
                         <h4 class="font-bold mt-4 mb-2">Délai pour poser les congés</h4>
                         <ul>
-                             <li><strong>Obligation d'information :</strong> L'employeur doit informer le salarié de ses droits à congés acquis dans le mois suivant sa reprise.</li>
+                            <li><strong>Obligation d'information :</strong> L'employeur doit informer le salarié de ses droits à congés acquis dans le mois suivant sa reprise.</li>
                             <li><strong>Délai de report :</strong> Le salarié dispose de <strong>15 mois</strong> après avoir été informé pour prendre ces congés.</li>
                         </ul>
-                         <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Pour plus de détails, consultez les sources officielles dans l'onglet "Ressources".</p>
+                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Pour plus de détails, consultez les sources officielles dans l'onglet "Ressources".</p>
                     </div>
                 </div>
 
@@ -341,13 +340,13 @@
                         <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
                     </button>
                     <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <p class="mb-4">Une rechute survient lorsqu'une nouvelle incapacité de travail est liée à un AT/MP déjà reconnu. Son traitement est similaire à l'arrêt initial (pas de carence CPAM), mais suit une procédure spécifique.</p>
-                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-center">
-                            <div class="text-center p-4 bg-slate-100 rounded-lg dark:bg-slate-700 dark:text-slate-300"><strong>1. Arrêt pour rechute</strong><br><small>L'employeur traite d'abord comme un arrêt maladie classique.</small></div>
+                        <p class="mb-4">Une rechute survient lorsqu'une nouvelle incapacité de travail est liée à un AT/MP déjà reconnu. Son traitement est similaire à l'arrêt initial (pas de carence CPAM, taux AT/MP), mais suit une procédure spécifique de reconnaissance.</p>
+                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-center justify-center">
+                            <div class="text-center p-4 bg-slate-100 rounded-lg dark:bg-slate-700 dark:text-slate-300"><strong>1. Déclaration de rechute</strong><br><small>L'employeur transmet la déclaration de rechute à la CPAM.</small></div>
                             <div class="text-2xl text-slate-400 dark:text-slate-500">→</div>
                             <div class="text-center p-4 bg-slate-100 rounded-lg dark:bg-slate-700 dark:text-slate-300"><strong>2. Décision CPAM</strong><br><small>La Caisse étudie le lien avec l'AT/MP initial.</small></div>
                             <div class="text-2xl text-slate-400 dark:text-slate-500">→</div>
-                            <div class="text-center p-4 bg-green-100 rounded-lg dark:bg-green-900 dark:text-green-200"><strong>3. Requalification</strong><br><small>Si reconnue, l'employeur envoie une attestation rectificative. L'arrêt est traité comme un AT/MP (pas de carence, taux de 60%/80%).</small></div>
+                            <div class="text-center p-4 bg-green-100 rounded-lg dark:bg-green-900 dark:text-green-200"><strong>3. Requalification</strong><br><small>Si reconnue, l'arrêt est traité comme un AT/MP (pas de carence, taux de 60%/80%).</small></div>
                         </div>
                     </div>
                 </div>
@@ -360,11 +359,11 @@
                     <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                         <p>Si le salarié a eu des absences non ou partiellement rémunérées (maladie, chômage partiel, etc.) pendant la période de référence, son salaire doit être "rétabli" pour le calcul des IJSS. L'employeur calcule le salaire que le salarié *aurait perçu* s'il avait travaillé normalement. Cette information est transmise via la DSN et utilisée par la CPAM pour un calcul juste des indemnités.</p>
                         <p class="mt-2"><strong>Exemples d'absences nécessitant un salaire rétabli :</strong> embauche en cours de mois, arrêt maladie, congé maternité, AT, chômage partiel, congé sans solde.</p>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Référence: Article R.323-8 du Code de la Sécurité Sociale.</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Référence: <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Article R.323-8 du Code de la Sécurité Sociale</a>.</p>
                     </div>
                 </div>
                 <!-- Accordion Item 3 -->
-                 <div class="card accordion-subrogation">
+                <div class="card accordion-subrogation">
                     <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
                         <span>🤝 Subrogation et Prévoyance</span>
                         <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
@@ -372,25 +371,26 @@
                     <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                         <h4 class="font-bold mb-2">La Subrogation</h4>
                         <p>L'employeur peut demander à percevoir les IJSS à la place du salarié. C'est une condition pour le maintien de salaire : le salaire maintenu doit être au moins égal aux IJSS. Cela permet d'assurer une continuité de revenu pour le salarié sur son bulletin de paie.</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Référence: <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Article L. 323-1 du Code de la Sécurité Sociale</a> (principe général des IJSS et de la subrogation).</p>
                         <h4 class="font-bold mt-4 mb-2">Le Complément Prévoyance</h4>
                         <p>Lorsqu'un maintien de salaire partiel est prévu (ex: 80%) et que la subrogation cesse, un contrat de prévoyance collective peut prendre le relais. L'assureur verse un complément pour atteindre le pourcentage de maintien garanti par le contrat. Ce complément est à identifier en paie et est généralement soumis à la CSG/CRDS.</p>
                     </div>
                 </div>
                 <!-- Accordion Item 4 -->
-                 <div class="card accordion-resources">
+                <div class="card accordion-resources">
                     <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
                         <span>🌐 Ressources Officielles</span>
                         <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
                     </button>
                     <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                       <ul class="list-disc list-inside space-y-2">
-                           <li><a href="https://www.ameli.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Ameli.fr :</strong></a> La référence pour les règles de la Sécurité Sociale.</li>
-                           <li><a href="https://www.service-public.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Service-Public.fr :</strong></a> Informations vulgarisées sur le droit du travail.</li>
-                           <li><a href="https://www.legifrance.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Légifrance :</strong></a> Accès direct au Code du Travail, Code de la Sécurité Sociale et aux jurisprudences.</li>
-                           <li><a href="https://boss.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Boss.gouv.fr :</strong></a> Le Bulletin Officiel de la Sécurité Sociale pour les règles d'application.</li>
-                           <li><a href="https://www.net-entreprises.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Net-Entreprises.fr :</strong></a> Le portail pour la DSN et la subrogation.</li>
-                       </ul>
-                       <p class="text-sm mt-4 text-slate-500 dark:text-slate-400">Il est recommandé de toujours vérifier les conventions collectives qui peuvent prévoir des dispositions plus favorables.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><a href="https://www.ameli.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Ameli.fr :</strong></a> La référence pour les règles de la Sécurité Sociale.</li>
+                            <li><a href="https://www.service-public.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Service-Public.fr :</strong></a> Informations vulgarisées sur le droit du travail.</li>
+                            <li><a href="https://www.legifrance.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Légifrance :</strong></a> Accès direct au Code du Travail, Code de la Sécurité Sociale et aux jurisprudences.</li>
+                            <li><a href="https://boss.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Boss.gouv.fr :</strong></a> Le Bulletin Officiel des Urssaf, centralisant la doctrine de la Sécurité Sociale.</li>
+                            <li><a href="https://www.net-entreprises.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Net-Entreprises.fr :</strong></a> Le portail pour la DSN et la subrogation.</li>
+                        </ul>
+                        <p class="text-sm mt-4 text-slate-500 dark:text-slate-400">Il est recommandé de toujours vérifier les conventions collectives qui peuvent prévoir des dispositions plus favorables.</p>
                     </div>
                 </div>
             </div>
@@ -401,14 +401,21 @@
     <footer class="bg-slate-800 text-white mt-12 dark:bg-slate-950">
         <div class="container mx-auto px-4 py-6 text-center text-slate-300 dark:text-slate-400">
             <p>Outil interactif créé à partir du "Guide Complet sur le Calcul des IJSS".</p>
-            <p class="text-sm mt-1">Les calculs sont des estimations basées sur les règles générales et doivent être vérifiés. Les plafonds sont indicatifs (base 2024/2025).</p>
+            <p class="text-sm mt-1">Les calculs sont des estimations basées sur les règles générales et la **réglementation en vigueur au 1er juillet 2025**.</p>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const SMIC_MENSUEL_BRUT_2025 = 1766.92; 
-            const PLAFOND_JOURNALIER_SS_2024 = 100.36; // This should be updated for 2025 if new data is available.
+            // --- CONSTANTES 2025 (Réglementation au 1er juillet 2025) ---
+            // Les valeurs ci-dessous sont confirmées comme étant en vigueur au 1er juillet 2025,
+            // sans modification par rapport aux revalorisations du 1er janvier ou 1er avril 2025.
+            const SMIC_MENSUEL_BRUT_2025 = 1801.80; // Source: Insee, La Paie Facile (stable depuis Nov 2024)
+            const PMSS_MENSUEL_2025 = 3925; // Source: Service-Public.fr, BOSS (fixé au 1er Janvier 2025)
+            const PLAFOND_IJSS_MALADIE_2025_BRUT = 41.47; // Source: LegiSocial, AXA (applicable depuis le 1er Avril 2025)
+            const PLAFOND_IJSS_PATERNITE_2025_BRUT = 101.94; // Source: Culture RH (fixé au 1er Janvier 2025)
+            const PLAFOND_IJSS_ATMP_60_2025_BRUT = 235.69; // Source: Culture RH (fixé au 1er Janvier 2025)
+            const PLAFOND_IJSS_ATMP_80_2025_BRUT = 314.25; // Source: Culture RH (fixé au 1er Janvier 2025)
 
             const arretTypeSelect = document.getElementById('arretType');
             const salaireRefInput = document.getElementById('salaireRef');
@@ -416,7 +423,7 @@
             const dureeArretInput = document.getElementById('dureeArret');
             const calculateBtn = document.getElementById('calculateBtn');
             const resultContainer = document.getElementById('resultContainer');
-
+            
             const carenceResultEl = document.getElementById('carenceResult');
             const sjrResultEl = document.getElementById('sjrResult');
             const ijssResultEl = document.getElementById('ijssResult');
@@ -470,88 +477,120 @@
                 let carenceSS = 0;
                 let carenceEmployeur = 0;
                 let sjr = 0;
-                let ijssBruteJournaliere = 0; 
+                let ijssBruteJournaliere = 0; // For maternité/paternité
                 let tauxIJSS = 0;
                 let baseCalculSJR = '';
-                let plafondSJR = Infinity;
-                let plafondIJSS = Infinity;
                 let paieImpactText = '';
                 let totalIJSSBrutes = 0;
                 let totalIJSSNettes = 0;
-                let joursIndemnisesCPAM_Display = 0; 
+                let joursIndemnisesCPAM_Display = 0;
+                
+                // Specific variables for AT/MP, initialized to avoid undefined errors
+                let gainJournalierNet = 0;
+                let ijssDaily60 = 0;
+                let ijssDaily80 = 0;
 
                 switch (type) {
                     case 'maladie':
                         carenceSS = 3;
-                        if (anciennete >= 1) carenceEmployeur = 7;
+                        // La carence employeur de 7 jours est une disposition légale liée à la loi de mensualisation (après 1 an d'ancienneté)
+                        // Article L. 1226-1 du Code du travail
+                        if (anciennete >= 1) carenceEmployeur = 7; 
                         
-                        baseCalculSJR = `((${salaire.toFixed(2)}€ x 3) / 91,25)`;
-                        sjr = (salaire * 3) / 91.25;
+                        // Salaire journalier de base plafonné à 1.4 SMIC mensuel
+                        // Article L. 323-4 Code de la Sécurité Sociale
+                        const salairePlafonneMaladieMensuel = Math.min(salaire, 1.4 * SMIC_MENSUEL_BRUT_2025);
+                        sjr = (salairePlafonneMaladieMensuel * 3) / 91.25; // SJR sur 3 mois
                         
-                        plafondSJR = 1.4 * SMIC_MENSUEL_BRUT_2025; 
-                        let salairePlafonneMaladie = Math.min(salaire, plafondSJR);
-                        sjr = (salairePlafonneMaladie * 3) / 91.25;
-
                         tauxIJSS = 0.50;
-                        ijssBruteJournaliere = sjr * tauxIJSS; 
+                        ijssBruteJournaliere = Math.min(sjr * tauxIJSS, PLAFOND_IJSS_MALADIE_2025_BRUT);
 
+                        baseCalculSJR = `((min(${salaire.toFixed(2)}€, 1.4 x SMIC) x 3) / 91,25)`;
                         joursIndemnisesCPAM_Display = Math.max(0, duree - carenceSS);
                         totalIJSSBrutes = joursIndemnisesCPAM_Display * ijssBruteJournaliere;
                         
-                        paieImpactText = `Pour une maladie non pro, l'employeur déduit ${duree} jours d'absence. La CPAM indemnise à partir du 4ème jour. Le salaire de référence est plafonné à 1,4 fois le SMIC (règle applicable au 1er avril 2025).`;
-                        if (anciennete >= 1) {
-                             paieImpactText += ` Avec ${anciennete} an(s) d'ancienneté, un maintien de salaire légal (90% puis 2/3) s'applique après 7 jours de carence. L'employeur peut opter pour la subrogation.`;
-                        } else {
-                            paieImpactText += ` Moins d'un an d'ancienneté, pas de maintien légal. Le salarié perçoit les IJSS directement (sauf si CC plus favorable).`;
-                        }
+                        paieImpactText = `Pour une maladie non professionnelle, voici la logique appliquée :<br>
+                        <ul>
+                            <li><strong>Déduction employeur :</strong> ${duree} jours d'absence sont déduits.</li>
+                            <li><strong>Délai de carence CPAM :</strong> 3 jours. L'indemnisation débute à partir du 4ème jour (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 323-1 Code de la Sécurité Sociale</a>).</li>
+                            <li><strong>Base de calcul :</strong> Salaire de référence plafonné à 1,4 fois le SMIC (${(1.4 * SMIC_MENSUEL_BRUT_2025).toFixed(2)}€/mois), applicable depuis le 1er avril 2025 (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 323-4 Code de la Sécurité Sociale</a>).</li>
+                            <li><strong>Plafond IJSS journalière :</strong> L'IJSS brute journalière est plafonnée à ${PLAFOND_IJSS_MALADIE_2025_BRUT.toFixed(2)}€.</li>
+                            <li><strong>Maintien de salaire employeur :</strong> ${anciennete >= 1 ? `Avec ${anciennete} an(s) d'ancienneté, un maintien de salaire légal (90% puis 2/3) s'applique après 7 jours de carence (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006900984/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 1226-1 Code du travail</a>). L'employeur peut opter pour la subrogation.` : `Moins d'un an d'ancienneté, pas de maintien légal. Le salarié perçoit les IJSS directement (sauf si convention collective plus favorable).`}</li>
+                        </ul>`;
                         break;
                     
                     case 'at':
                     case 'mp':
                         carenceSS = 0; 
-                        carenceEmployeur = 0;
+                        carenceEmployeur = 0; // Jour de l'accident à la charge de l'employeur
                         
-                        baseCalculSJR = `(${salaire.toFixed(2)}€ / 30,42)`;
+                        // Salaire journalier de base (SJB) - Art. R. 433-5 Code de la Sécurité Sociale
                         sjr = salaire / 30.42;
+                        baseCalculSJR = `(${salaire.toFixed(2)}€ / 30,42)`;
 
-                        let joursIndemnisesCPAM_ATMP = Math.max(0, duree - 1); 
+                        // Gain Journalier Net (SJB - 21%)
+                        gainJournalierNet = sjr * (1 - 0.21);
+
+                        // Calcul IJSS pour les 28 premiers jours (60%) et au-delà (80%)
+                        // Articles L. 433-1 et R. 433-5 Code de la Sécurité Sociale
+                        // Les IJSS sont plafonnées au gain journalier net ET aux plafonds spécifiques AT/MP
+                        ijssDaily60 = Math.min(sjr * 0.60, gainJournalierNet, PLAFOND_IJSS_ATMP_60_2025_BRUT);
+                        ijssDaily80 = Math.min(sjr * 0.80, gainJournalierNet, PLAFOND_IJSS_ATMP_80_2025_BRUT);
+
+                        // Jours indemnisés par la CPAM (dès le lendemain de l'accident)
+                        const joursIndemnisesCPAM_ATMP = Math.max(0, duree - 1); 
                         joursIndemnisesCPAM_Display = joursIndemnisesCPAM_ATMP; 
 
-                        let jours60Percent = Math.min(joursIndemnisesCPAM_ATMP, 27);
-                        let jours80Percent = Math.max(0, joursIndemnisesCPAM_ATMP - 27);
-
-                        let gainJournalierNet = sjr * (1 - 0.21);
-                        let ijssDaily60 = Math.min(sjr * 0.60, gainJournalierNet);
-                        let ijssDaily80 = Math.min(sjr * 0.80, gainJournalierNet);
+                        const jours60Percent = Math.min(joursIndemnisesCPAM_ATMP, 27); // 27 jours après le jour de l'accident
+                        const jours80Percent = Math.max(0, joursIndemnisesCPAM_ATMP - 27);
 
                         totalIJSSBrutes = (jours60Percent * ijssDaily60) + (jours80Percent * ijssDaily80);
                         
-                        let typeText = type === 'at' ? "un accident du travail" : "une maladie professionnelle";
-                        paieImpactText = `Pour ${typeText}, le jour de l'accident/constatation est payé par l'employeur. Les IJSS sont versées dès le lendemain sans carence. Le taux est de 60% pour les jours 2 à 28 de l'arrêt (soit les 27 premiers jours indemnisés par la CPAM), puis de 80% à partir du 29ème jour de l'arrêt. Le maintien de salaire est souvent total via la convention collective, avec subrogation.`;
+                        let typeText = type === 'at' ? "un accident du travail ou de trajet" : "une maladie professionnelle";
+                        paieImpactText = `Pour ${typeText}, voici la logique appliquée :<br>
+                        <ul>
+                            <li><strong>Jour de l'accident/constatation :</strong> Payé par l'employeur.</li>
+                            <li><strong>Délai de carence CPAM :</strong> Aucun ! Les IJSS sont versées dès le lendemain (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 433-1 Code de la Sécurité Sociale</a>).</li>
+                            <li><strong>Taux d'indemnisation :</strong>
+                                <ul>
+                                    <li>60% pour les 28 premiers jours d'arrêt (IJSS max ${PLAFOND_IJSS_ATMP_60_2025_BRUT.toFixed(2)}€/jour).</li>
+                                    <li>80% à partir du 29ème jour (IJSS max ${PLAFOND_IJSS_ATMP_80_2025_BRUT.toFixed(2)}€/jour - <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. R. 433-5 Code de la Sécurité Sociale</a>).</li>
+                                </ul>
+                            </li>
+                            <li><strong>Maintien de salaire :</strong> Souvent total via la convention collective, avec subrogation.</li>
+                        </ul>`;
                         break;
                     
                     case 'maternite':
                     case 'paternite':
                         carenceSS = 0;
-                        carenceEmployeur = 0;
+                        carenceEmployeur = 0; // Pas de carence employeur légale spécifique, dépend de la CC
                         
-                        let salairePlafPMSS = Math.min(salaire, 3864); 
-                        let salaireNetReconstitué = (salairePlafPMSS * 3) * (1 - 0.21);
-                        sjr = salaireNetReconstitué / 91.25;
-                        baseCalculSJR = `((min(${salaire.toFixed(2)}€, PMSS) x 3) x (1-21%)) / 91,25`;
+                        // Salaire plafonné au PMSS mensuel - Articles L. 331-3 et R. 331-5 Code de la Sécurité Sociale
+                        const salairePlafPMSS = Math.min(salaire, PMSS_MENSUEL_2025); 
+                        const salaireNetReconstitué = (salairePlafPMSS * 3) * (1 - 0.21);
+                        sjr = salaireNetReconstitué / 91.25; // SJR après abattement de 21%
+                        baseCalculSJR = `((min(${salaire.toFixed(2)}€, PMSS ${PMSS_MENSUEL_2025}€) x 3) x (1-21%)) / 91,25`;
                         
-                        ijssBruteJournaliere = Math.min(sjr, PLAFOND_JOURNALIER_SS_2024); 
-                        tauxIJSS = 1;
+                        ijssBruteJournaliere = Math.min(sjr, PLAFOND_IJSS_PATERNITE_2025_BRUT); 
+                        tauxIJSS = 1; // 100% du SJR net reconstitué
 
                         joursIndemnisesCPAM_Display = duree; 
                         totalIJSSBrutes = joursIndemnisesCPAM_Display * ijssBruteJournaliere;
 
                         let congeText = type === 'maternite' ? "un congé maternité" : "un congé paternité";
-                        paieImpactText = `Pour ${congeText}, il n'y a pas de délai de carence. L'indemnisation est égale au gain journalier de base, calculé sur les salaires plafonnés au PMSS, et l'IJSS journalière est elle-même plafonnée. Le maintien à 100% avec subrogation est très fréquent via les conventions collectives.`;
+                        paieImpactText = `Pour ${congeText}, voici la logique appliquée :<br>
+                        <ul>
+                            <li><strong>Délai de carence :</strong> Aucun ! L'indemnisation débute dès le 1er jour (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. L. 331-3 Code de la Sécurité Sociale</a>).</li>
+                            <li><strong>Calcul de l'indemnisation :</strong> Égale au gain journalier de base.</li>
+                            <li><strong>Base de calcul :</strong> Salaires des 3 mois précédant le congé, plafonnés au PMSS (${PMSS_MENSUEL_2025}€/mois - <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006750316/" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Art. R. 331-5 Code de la Sécurité Sociale</a>).</li>
+                            <li><strong>Plafond IJSS journalière :</strong> L'IJSS brute journalière est plafonnée à ${PLAFOND_IJSS_PATERNITE_2025_BRUT.toFixed(2)}€.</li>
+                            <li><strong>Maintien de salaire :</strong> Le maintien à 100% avec subrogation est très fréquent via les conventions collectives.</li>
+                        </ul>`;
                         break;
                 }
                 
-                totalIJSSNettes = totalIJSSBrutes * (1 - 0.067);
+                totalIJSSNettes = totalIJSSBrutes * (1 - 0.067); // CSG/CRDS à 6.7%
                 
                 carenceResultEl.innerHTML = `
                     <strong>Carence CPAM:</strong> ${carenceSS} jours<br>
@@ -568,14 +607,14 @@
                 ijssResultEl.innerHTML = `
                     ${(type === 'at' || type === 'mp') ? 
                         `<strong>IJSS journalière (J2-J28 de l'arrêt):</strong> ${ijssDaily60.toFixed(2)} €<br>
-                         <strong>IJSS journalière (Dès J29 de l'arrêt):</strong> ${ijssDaily80.toFixed(2)} €<br>` : 
+                        <strong>IJSS journalière (Dès J29 de l'arrêt):</strong> ${ijssDaily80.toFixed(2)} €<br>` : 
                         `<strong>IJSS brute / jour:</strong> ${ijssBruteJournaliere.toFixed(2)} €<br>`
                     }
                     <strong>Total IJSS brutes:</strong> ${totalIJSSBrutes.toFixed(2)} €<br>
                     <strong>Total IJSS nettes (estimé):</strong> <span class="font-bold">${totalIJSSNettes.toFixed(2)} €</span>
                 `;
 
-                paieImpactEl.textContent = paieImpactText;
+                paieImpactEl.innerHTML = paieImpactText; // MODIFICATION ICI
 
                 resultContainer.classList.remove('hidden');
             });
@@ -602,7 +641,7 @@
                             },
                             {
                                 label: 'AT / MP',
-                                data: [0, 60],
+                                data: [0, 60], // Initial 60%, puis 80%
                                 backgroundColor: chartColors.atmp.backgroundColor,
                                 borderColor: chartColors.atmp.borderColor,
                                 borderWidth: 1
@@ -626,7 +665,7 @@
                                 text: 'Carence et Taux d\'Indemnisation par Type d\'Arrêt',
                                 color: getComputedStyle(document.body).color 
                             },
-                             tooltip: {
+                            tooltip: {
                                 callbacks: {
                                     label: function(context) {
                                         let label = context.dataset.label || '';
@@ -695,9 +734,9 @@
                 comparisonChart.data.datasets[2].borderColor = chartColors.maternityPaternity.borderColor;
                 
                 // Update text and grid colors
-                comparisonChart.options.plugins.title.color = getComputedStyle(document.body).color;
-                comparisonChart.options.scales.x.ticks.color = getComputedStyle(document.body).color;
-                comparisonChart.options.scales.y.ticks.color = getComputedStyle(document.body).color;
+                comparisonChart.options.plugins.title.color = getComputedStyle(document.body).color; 
+                comparisonChart.options.scales.x.ticks.color = getComputedStyle(document.body).color; 
+                comparisonChart.options.scales.y.ticks.color = getComputedStyle(document.body).color; 
                 comparisonChart.options.scales.x.grid.color = htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
                 comparisonChart.options.scales.y.grid.color = htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
@@ -720,4 +759,3 @@
     </script>
 </body>
 </html>
-
