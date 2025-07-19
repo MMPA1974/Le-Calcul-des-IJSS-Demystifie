@@ -470,7 +470,7 @@
                 let carenceSS = 0;
                 let carenceEmployeur = 0;
                 let sjr = 0;
-                let ijssBruteJournaliere = 0; // This will be the average for display or specific for non-AT/MP
+                let ijssBruteJournaliere = 0; 
                 let tauxIJSS = 0;
                 let baseCalculSJR = '';
                 let plafondSJR = Infinity;
@@ -478,7 +478,7 @@
                 let paieImpactText = '';
                 let totalIJSSBrutes = 0;
                 let totalIJSSNettes = 0;
-                let joursIndemnisesCPAM_ATMP = 0; // Declared here for wider scope
+                let joursIndemnisesCPAM_Display = 0; 
 
                 switch (type) {
                     case 'maladie':
@@ -488,16 +488,15 @@
                         baseCalculSJR = `((${salaire.toFixed(2)}€ x 3) / 91,25)`;
                         sjr = (salaire * 3) / 91.25;
                         
-                        // Plafond pour maladie non professionnelle
-                        plafondSJR = 1.4 * SMIC_MENSUEL_BRUT_2025; // Plafond mensuel
+                        plafondSJR = 1.4 * SMIC_MENSUEL_BRUT_2025; 
                         let salairePlafonneMaladie = Math.min(salaire, plafondSJR);
                         sjr = (salairePlafonneMaladie * 3) / 91.25;
 
                         tauxIJSS = 0.50;
-                        ijssBruteJournaliere = sjr * tauxIJSS; // Daily rate for display
+                        ijssBruteJournaliere = sjr * tauxIJSS; 
 
-                        let joursIndemnisesCPAMMaladie = Math.max(0, duree - carenceSS);
-                        totalIJSSBrutes = joursIndemnisesCPAMMaladie * ijssBruteJournaliere;
+                        joursIndemnisesCPAM_Display = Math.max(0, duree - carenceSS);
+                        totalIJSSBrutes = joursIndemnisesCPAM_Display * ijssBruteJournaliere;
                         
                         paieImpactText = `Pour une maladie non pro, l'employeur déduit ${duree} jours d'absence. La CPAM indemnise à partir du 4ème jour. Le salaire de référence est plafonné à 1,4 fois le SMIC (règle applicable au 1er avril 2025).`;
                         if (anciennete >= 1) {
@@ -509,18 +508,16 @@
                     
                     case 'at':
                     case 'mp':
-                        carenceSS = 0; // Jour de l'accident à la charge de l'employeur
+                        carenceSS = 0; 
                         carenceEmployeur = 0;
                         
                         baseCalculSJR = `(${salaire.toFixed(2)}€ / 30,42)`;
                         sjr = salaire / 30.42;
 
-                        // joursIndemnisesCPAM_ATMP est le nombre de jours indemnisés par la CPAM (duree - 1)
-                        joursIndemnisesCPAM_ATMP = Math.max(0, duree - 1); 
+                        let joursIndemnisesCPAM_ATMP = Math.max(0, duree - 1); 
+                        joursIndemnisesCPAM_Display = joursIndemnisesCPAM_ATMP; 
 
-                        // Jours à 60% : les 27 premiers jours indemnisés par la CPAM (correspondant aux jours 2 à 28 de l'arrêt)
                         let jours60Percent = Math.min(joursIndemnisesCPAM_ATMP, 27);
-                        // Jours à 80% : à partir du 28ème jour indemnisé par la CPAM (correspondant au 29ème jour de l'arrêt)
                         let jours80Percent = Math.max(0, joursIndemnisesCPAM_ATMP - 27);
 
                         let gainJournalierNet = sjr * (1 - 0.21);
@@ -538,16 +535,16 @@
                         carenceSS = 0;
                         carenceEmployeur = 0;
                         
-                        let salairePlafPMSS = Math.min(salaire, 3864); // Plafond PMSS 2024 - to be updated for 2025
+                        let salairePlafPMSS = Math.min(salaire, 3864); 
                         let salaireNetReconstitué = (salairePlafPMSS * 3) * (1 - 0.21);
                         sjr = salaireNetReconstitué / 91.25;
                         baseCalculSJR = `((min(${salaire.toFixed(2)}€, PMSS) x 3) x (1-21%)) / 91,25`;
                         
-                        ijssBruteJournaliere = Math.min(sjr, PLAFOND_JOURNALIER_SS_2024); // Daily rate for display
+                        ijssBruteJournaliere = Math.min(sjr, PLAFOND_JOURNALIER_SS_2024); 
                         tauxIJSS = 1;
 
-                        let joursIndemnisesCPAMMaternitePaternite = duree;
-                        totalIJSSBrutes = joursIndemnisesCPAMMaternitePaternite * ijssBruteJournaliere;
+                        joursIndemnisesCPAM_Display = duree; 
+                        totalIJSSBrutes = joursIndemnisesCPAM_Display * ijssBruteJournaliere;
 
                         let congeText = type === 'maternite' ? "un congé maternité" : "un congé paternité";
                         paieImpactText = `Pour ${congeText}, il n'y a pas de délai de carence. L'indemnisation est égale au gain journalier de base, calculé sur les salaires plafonnés au PMSS, et l'IJSS journalière est elle-même plafonnée. Le maintien à 100% avec subrogation est très fréquent via les conventions collectives.`;
@@ -559,7 +556,7 @@
                 carenceResultEl.innerHTML = `
                     <strong>Carence CPAM:</strong> ${carenceSS} jours<br>
                     <strong>Carence Employeur (légale):</strong> ${carenceEmployeur} jours<br>
-                    <strong>Jours indemnisés par la CPAM:</strong> ${ (type === 'at' || type === 'mp') ? joursIndemnisesCPAM_ATMP : Math.max(0, duree - carenceSS)} jours
+                    <strong>Jours indemnisés par la CPAM:</strong> ${joursIndemnisesCPAM_Display} jours
                 `;
                 
                 sjrResultEl.innerHTML = `
@@ -583,13 +580,13 @@
                 resultContainer.classList.remove('hidden');
             });
 
-            let comparisonChart; // Declare chart variable globally or in a scope accessible by updateChartColors
+            let comparisonChart; 
 
             function initializeChart() {
                 const chartColors = getChartColors();
                 const comparisonChartCtx = document.getElementById('comparisonChart').getContext('2d');
                 if (comparisonChart) {
-                    comparisonChart.destroy(); // Destroy existing chart before creating a new one
+                    comparisonChart.destroy(); 
                 }
                 comparisonChart = new Chart(comparisonChartCtx, {
                     type: 'bar',
@@ -627,7 +624,7 @@
                             title: {
                                 display: true,
                                 text: 'Carence et Taux d\'Indemnisation par Type d\'Arrêt',
-                                color: getComputedStyle(document.body).color // Dynamic text color
+                                color: getComputedStyle(document.body).color 
                             },
                              tooltip: {
                                 callbacks: {
@@ -653,7 +650,7 @@
                             x: {
                                 beginAtZero: true,
                                 ticks: {
-                                    color: getComputedStyle(document.body).color // Dynamic tick color
+                                    color: getComputedStyle(document.body).color 
                                 },
                                 grid: {
                                     color: htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
@@ -661,7 +658,7 @@
                             },
                             y: {
                                 ticks: {
-                                    color: getComputedStyle(document.body).color // Dynamic tick color
+                                    color: getComputedStyle(document.body).color 
                                 },
                                 grid: {
                                     color: htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
@@ -675,15 +672,15 @@
             function getChartColors() {
                 if (htmlElement.classList.contains('dark')) {
                     return {
-                        maladie: { backgroundColor: 'rgba(252, 165, 165, 0.7)', borderColor: 'rgb(252, 165, 165)' }, // red-300
-                        atmp: { backgroundColor: 'rgba(253, 224, 71, 0.7)', borderColor: 'rgb(253, 224, 71)' }, // yellow-300
-                        maternityPaternity: { backgroundColor: 'rgba(221, 214, 254, 0.7)', borderColor: 'rgb(221, 214, 254)' } // indigo-300
+                        maladie: { backgroundColor: 'rgba(252, 165, 165, 0.7)', borderColor: 'rgb(252, 165, 165)' }, 
+                        atmp: { backgroundColor: 'rgba(253, 224, 71, 0.7)', borderColor: 'rgb(253, 224, 71)' }, 
+                        maternityPaternity: { backgroundColor: 'rgba(221, 214, 254, 0.7)', borderColor: 'rgb(221, 214, 254)' } 
                     };
                 } else {
                     return {
-                        maladie: { backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgb(239, 68, 68)' }, // red-500
-                        atmp: { backgroundColor: 'rgba(245, 158, 11, 0.7)', borderColor: 'rgb(245, 158, 11)' }, // amber-500
-                        maternityPaternity: { backgroundColor: 'rgba(168, 85, 247, 0.7)', borderColor: 'rgb(168, 85, 247)' } // purple-500
+                        maladie: { backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgb(239, 68, 68)' }, 
+                        atmp: { backgroundColor: 'rgba(245, 158, 11, 0.7)', borderColor: 'rgb(245, 158, 11)' }, 
+                        maternityPaternity: { backgroundColor: 'rgba(168, 85, 247, 0.7)', borderColor: 'rgb(168, 85, 247)' } 
                     };
                 }
             }
@@ -707,7 +704,7 @@
                 comparisonChart.update();
             }
 
-            initializeChart(); // Initialize chart on page load
+            initializeChart(); 
             
             const accordionToggles = document.querySelectorAll('.accordion-toggle');
             accordionToggles.forEach(toggle => {
@@ -723,3 +720,4 @@
     </script>
 </body>
 </html>
+
