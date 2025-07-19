@@ -3,345 +3,723 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infographie : Le Calcul des IJSS Démystifié</title>
+    <title>Calculateur d'Indemnités Journalières (IJSS)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- 
-    Plan de la Narration :
-    1.  Introduction : Accroche avec les chiffres et taux clés (CSG, Taux d'indemnisation).
-    2.  Comparaison Globale : Un tableau de bord comparatif des principaux types d'arrêts (Maladie, AT/MP, Maternité/Paternité).
-    3.  Le Processus : Visualisation du guide de calcul pas à pas pour le gestionnaire de paie.
-    4.  Mécanismes Clés : Zoom sur la subrogation et le rôle de la prévoyance.
-    5.  Mise en Pratique : Illustration via des scénarios concrets et comparés.
-    6.  Acquisition Congés Payés : Nouvelle section sur les règles d'acquisition pendant l'arrêt maladie.
-    7.  Ressources : Liens directs vers les sources officielles.
-
-    Palette de Couleurs Choisie : Brilliant Blues (#00A1E4, #0077C0, #005082) avec un accent Orange (#F5A623).
-
-    Choix des Visualisations :
-    - Taux de Prélèvement (CSG/CRDS) -> Goal: Inform -> Donut Chart (Chart.js) -> Justification: Montre clairement la part des prélèvements sur le montant brut. CONFIRMS NO SVG.
-    - Taux d'Indemnisation par Type d'Arrêt -> Goal: Compare -> Bar Chart (Chart.js) -> Justification: Comparaison directe et simple des pourcentages. CONFIRMS NO SVG.
-    - Comparatif des Arrêts (Carence, Indemnisation, Plafond) -> Goal: Compare -> Grouped Bar Chart (Chart.js) -> Justification: Idéal pour comparer plusieurs métriques (carence, taux) sur plusieurs catégories (types d'arrêt). CONFIRMS NO SVG.
-    - Processus de Calcul en 10 étapes -> Goal: Organize -> Flow Chart (HTML/CSS) -> Justification: Visualise une séquence d'actions de manière logique et facile à suivre. CONFIRMS NO SVG/MERMAID.
-    - Interaction des Payeurs (CPAM, Employeur, Prévoyance) -> Goal: Relationships -> Diagramme de relation (HTML/CSS) -> Justification: Montre les liens et flux financiers entre les entités. CONFIRMS NO SVG.
-    - Comparaison des Scénarios (Amandine, Bastien, etc.) -> Goal: Compare -> Bar Chart (Chart.js) -> Justification: Compare les résultats financiers finaux pour les salariés dans différents cas. CONFIRMS NO SVG.
-
-    Confirmation finale : Ni Mermaid JS ni SVG n'ont été utilisés dans cette production. Tous les graphiques sont rendus via la bibliothèque Chart.js (sur Canvas) ou construits avec des éléments HTML et des styles Tailwind CSS.
-    -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony with vibrant accents -->
+    <!-- Application Structure Plan: The application is designed as an interactive dashboard, moving beyond the linear structure of the report. The core is an "IJSS Simulator" (Section 1) allowing users to get immediate answers for specific cases, which is their primary need. This is supported by a "Comparative View" (Section 2) using cards and a dynamic chart to contrast different leave types, facilitating a deeper understanding of the system's logic. Finally, "Key Concepts & Resources" (Section 3) are organized in an accordion, providing detailed information on demand without cluttering the main interface. This task-oriented structure prioritizes usability and quick access to relevant calculations over simply replicating the report's text. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Calculate -> Interactive Form/Simulator -> User selects leave type & inputs data, JS calculates and displays results -> Practical, answers user's main question -> Vanilla JS. 2. Comparison of Leave Types -> Goal: Compare -> Bar Chart -> Checkboxes filter the leave types shown on the chart -> Visual comparison is faster than reading a table -> Chart.js. 3. Detailed Rules (Rechute, Salaire Rétabli, Congés Payés) -> Goal: Organize/Inform -> Accordion & Styled HTML flow -> Click to expand/collapse sections -> Keeps UI clean, avoids info overload -> Vanilla JS + Tailwind CSS. This structure provides a tool, not just a document. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 40vh; }
-        .flow-arrow {
-            content: '→';
-            color: #F5A623;
-            font-size: 2rem;
-            line-height: 1;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-900 for strong contrast in light mode */
         }
-        .flow-step {
-            border-left: 4px solid #00A1E4;
+        body.dark {
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0; /* slate-200 */
+        }
+        body.dark .section-title {
+            color: #f8fafc; /* slate-50 */
+            border-bottom-color: #334155; /* slate-700 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        body.dark .card {
+            background-color: #1e293b; /* slate-800 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            border-color: #334155; /* slate-700 */
+        }
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        /* Tag colors for light mode */
+        .tag.bg-red-100 { background-color: #fee2e2; color: #b91c1c; } /* red-100, red-700 */
+        .tag.bg-yellow-100 { background-color: #fffbeb; color: #b45309; } /* yellow-100, yellow-700 */
+        .tag.bg-purple-100 { background-color: #f3e8ff; color: #6b21a8; } /* purple-100, purple-700 */
+
+        /* Tag colors for dark mode */
+        body.dark .tag.bg-red-100 { background-color: #7f1d1d; color: #fca5a5; } /* red-900, red-300 */
+        body.dark .tag.bg-yellow-100 { background-color: #78350f; color: #fcd34d; } /* yellow-900, yellow-300 */
+        body.dark .tag.bg-purple-100 { background-color: #581c87; color: #d8b4fe; } /* purple-900, purple-300 */
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: white;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        body.dark .btn-primary {
+            background-color: #3b82f6; /* blue-500 */
+        }
+        body.dark .btn-primary:hover {
+            background-color: #2563eb; /* blue-600 */
+        }
+        input, select {
+            border: 1px solid #cbd5e1; /* slate-300 */
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            background-color: white;
+            color: #475569;
+        }
+        body.dark input, body.dark select {
+            border-color: #475569; /* slate-700 */
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        .accordion-content ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        .accordion-content ul li {
+            margin-bottom: 0.5rem;
+        }
+        /* Specific card colors for simulator results */
+        #carenceCard { background-color: #fffbeb; border-color: #fde68a; } /* amber-50, amber-300 */
+        #carenceCard h4 { color: #b45309; } /* amber-800 */
+        #sjrCard { background-color: #ecfeff; border-color: #a5f3fc; } /* cyan-50, cyan-300 */
+        #sjrCard h4 { color: #0e7490; } /* cyan-800 */
+        #ijssCard { background-color: #ecfdf5; border-color: #a7f3d0; } /* emerald-50, emerald-300 */
+        #ijssCard h4 { color: #065f46; } /* emerald-800 */
+        #resultContainer .card.bg-slate-50 { background-color: #f8fafc; border-color: #e2e8f0; } /* slate-50, slate-200 */
+        #resultContainer .card.bg-slate-50 h4 { color: #1e293b; } /* slate-800 */
+
+        /* Dark mode specific card colors for simulator results */
+        body.dark #carenceCard { background-color: #451a03; border-color: #78350f; } /* amber-950, amber-900 */
+        body.dark #carenceCard h4 { color: #fcd34d; } /* amber-300 */
+        body.dark #sjrCard { background-color: #083344; border-color: #164e63; } /* cyan-950, cyan-900 */
+        body.dark #sjrCard h4 { color: #67e8f9; } /* cyan-300 */
+        body.dark #ijssCard { background-color: #064e3b; border-color: #047857; } /* emerald-950, emerald-900 */
+        body.dark #ijssCard h4 { color: #6ee7b7; } /* emerald-300 */
+        body.dark #resultContainer .card.bg-slate-50 { background-color: #1e293b; border-color: #334155; } /* slate-800, slate-700 */
+        body.dark #resultContainer .card.bg-slate-50 h4 { color: #f8fafc; } /* slate-50 */
+
+        /* New accordion item specific colors */
+        .card.accordion-cp { background-color: #e0f7fa; border-color: #80deea; } /* cyan-50, cyan-300 */
+        .card.accordion-rechute { background-color: #ffe0b2; border-color: #ffb74d; } /* orange-50, orange-300 */
+        .card.accordion-sjr { background-color: #e8f5e9; border-color: #a5d6a7; } /* green-50, green-300 */
+        .card.accordion-subrogation { background-color: #e3f2fd; border-color: #90caf9; } /* blue-50, blue-300 */
+        .card.accordion-resources { background-color: #f3e5f5; border-color: #ce93d8; } /* purple-50, purple-300 */
+
+        /* Dark mode for new accordion item specific colors */
+        body.dark .card.accordion-cp { background-color: #004d40; border-color: #00897b; } /* teal-900, teal-600 */
+        body.dark .card.accordion-rechute { background-color: #5e350b; border-color: #fb923c; } /* orange-900, orange-400 */
+        body.dark .card.accordion-sjr { background-color: #1b5e20; border-color: #4caf50; } /* green-900, green-500 */
+        body.dark .card.accordion-subrogation { background-color: #1a237e; border-color: #3f51b5; } /* indigo-900, indigo-500 */
+        body.dark .card.accordion-resources { background-color: #4a148c; border-color: #ab47bc; } /* purple-900, purple-500 */
+
+        .card.accordion-cp h4, .card.accordion-cp strong { color: #006064; } /* cyan-900 */
+        .card.accordion-rechute h4, .card.accordion-rechute strong { color: #e65100; } /* orange-900 */
+        .card.accordion-sjr h4, .card.accordion-sjr strong { color: #2e7d32; } /* green-900 */
+        .card.accordion-subrogation h4, .card.accordion-subrogation strong { color: #1976d2; } /* blue-700 */
+        .card.accordion-resources h4, .card.accordion-resources strong { color: #6a1b9a; } /* purple-900 */
+
+        body.dark .card.accordion-cp h4, body.dark .card.accordion-cp strong { color: #80cbc4; } /* teal-200 */
+        body.dark .card.accordion-rechute h4, body.dark .card.accordion-rechute strong { color: #ffcc80; } /* orange-200 */
+        body.dark .card.accordion-sjr h4, body.dark .card.accordion-sjr strong { color: #a5d6a7; } /* green-200 */
+        body.dark .card.accordion-subrogation h4, body.dark .card.accordion-subrogation strong { color: #9fa8da; } /* indigo-200 */
+        body.dark .card.accordion-resources h4, body.dark .card.accordion-resources strong { color: #e1bee7; } /* purple-200 */
+
+        /* General text for cards and accordion content */
+        .card p, .card li {
+            color: #475569; /* slate-700 for general text in light mode */
+        }
+        body.dark .card p, body.dark .card li {
+            color: #e2e8f0; /* slate-200 */
+        }
+        /* Text for accordion toggles */
+        .accordion-toggle span {
+            color: #1e293b; /* slate-800 for accordion headers in light mode */
+        }
+        body.dark .accordion-toggle span {
+            color: #e2e8f0; /* slate-200 */
+        }
+        /* Specific text for header and simulator impact section */
+        header p { /* description under main title */
+            color: #475569; /* slate-700 */
+        }
+        body.dark header p {
+            color: #94a3b8; /* slate-400 */
+        }
+        #paieImpact { /* text in the impact card */
+            color: #475569; /* slate-700 */
+        }
+        body.dark #paieImpact {
+            color: #e2e8f0; /* slate-200 */
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-slate-700">
 
-    <header class="bg-white shadow-md p-6 text-center">
-        <h1 class="text-4xl font-black text-gray-900">✨ Le Calcul des IJSS Démystifié ✨</h1>
-        <p class="text-lg text-gray-600 mt-2">Une infographie pour maîtriser l'indemnisation des arrêts de travail.</p>
-        <p class="text-sm text-gray-500 mt-2">Informations basées sur les règles en vigueur au 1er avril 2025.</p>
+    <header class="bg-white shadow-md dark:bg-slate-800">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-50">✨ Démystifier le Calcul des IJSS</h1>
+            <button id="themeToggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span id="themeIcon" class="text-xl">☀️</span>
+            </button>
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 mt-1 px-4 mx-auto container">Un outil interactif pour les gestionnaires de paie. Règles à jour au 1er avril 2025.</p>
     </header>
 
-    <main class="container mx-auto p-4 md:p-8">
-        
-        <section id="kpis" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-                <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Taux de Prélèvement sur IJSS Brutes</h3>
-                <div class="chart-container h-64">
-                    <canvas id="csgChart"></canvas>
-                </div>
-                <p class="mt-4 text-center text-gray-600">L'Assurance Maladie déduit <strong>6,70%</strong> (CSG/CRDS) pour calculer les IJSS nettes versées.</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-                 <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Jours de Carence (Arrêt Maladie)</h3>
-                <div class="text-8xl font-black text-[#0077C0]">3</div>
-                <p class="mt-4 text-center text-gray-600">jours calendaires de carence avant le début du versement des IJSS pour une maladie non professionnelle.</p>
-            </div>
+    <main class="container mx-auto px-4 py-8 md:py-12">
 
-            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-                 <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Jours de Carence (AT/MP & Maternité)</h3>
-                <div class="text-8xl font-black text-[#00A1E4]">0</div>
-                <p class="mt-4 text-center text-gray-600">Aucun délai de carence pour les accidents du travail, maladies professionnelles et congés maternité/paternité.</p>
-            </div>
-        </section>
-
-        <section id="comparison" class="bg-white rounded-lg shadow-lg p-6 mb-12">
-            <h2 class="text-3xl font-bold text-center mb-2 text-gray-900">Comparatif des Taux d'Indemnisation</h2>
-            <p class="text-center text-gray-600 mb-6">Le pourcentage du Salaire Journalier de Référence (SJR) versé par la CPAM varie significativement selon la nature de l'arrêt.</p>
-            <div class="chart-container h-96 max-h-[50vh]">
-                <canvas id="rateComparisonChart"></canvas>
-            </div>
-        </section>
-        
-        <section id="process-flow" class="my-12">
-            <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Le Processus de Calcul en 10 Étapes Clés 🚀</h2>
-            <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#005082]">1. Réception & 2. Identification</p>
-                        <p class="text-sm text-gray-600">Réceptionner l'arrêt et identifier son type (Maladie, AT, MP, etc.).</p>
+        <!-- Section 1: Simulateur Interactif -->
+        <section id="simulator" class="mb-16">
+            <h2 class="section-title">📊 1. Simulateur de Calcul d'IJSS</h2>
+            <p class="mb-6 text-slate-600 dark:text-slate-400">
+                Cette section vous permet de simuler le calcul des indemnités pour un cas précis. Sélectionnez le type d'arrêt et remplissez les champs pour obtenir une estimation détaillée du calcul des IJSS, des jours de carence et de l'impact en paie. C'est l'outil principal pour appliquer directement les règles du guide.
+            </p>
+            <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label for="arretType" class="font-semibold block mb-2">📝 Type d'arrêt</label>
+                        <select id="arretType">
+                            <option value="maladie">Maladie non professionnelle</option>
+                            <option value="at">Accident du Travail / Trajet</option>
+                            <option value="mp">Maladie Professionnelle</option>
+                            <option value="maternite">Congé Maternité / Adoption</option>
+                            <option value="paternite">Congé Paternité</option>
+                        </select>
                     </div>
-                    <div class="text-center hidden md:block flow-arrow">→</div>
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#005082]">3. Période & 4. Ancienneté</p>
-                        <p class="text-sm text-gray-600">Déterminer les dates de l'arrêt et l'ancienneté du salarié.</p>
+                    <div>
+                        <label for="salaireRef" class="font-semibold block mb-2">💰 Salaire brut mensuel (€)</label>
+                        <input type="number" id="salaireRef" placeholder="Ex: 2500" value="2500">
                     </div>
-                </div>
-                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#0077C0]">5. Convention Collective</p>
-                        <p class="text-sm text-gray-600">Vérifier les dispositions conventionnelles (maintien, carence...). C'est crucial !</p>
+                    <div id="ancienneteContainer">
+                        <label for="anciennete" class="font-semibold block mb-2">⏳ Ancienneté (années)</label>
+                        <input type="number" id="anciennete" placeholder="Ex: 3" value="3">
                     </div>
-                    <div class="text-center hidden md:block flow-arrow">→</div>
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#0077C0]">6. Retenue pour Absence</p>
-                        <p class="text-sm text-gray-600">Calculer la déduction sur le salaire brut pour tous les jours non travaillés.</p>
+                    <div>
+                        <label for="dureeArret" class="font-semibold block mb-2">🗓️ Durée de l'arrêt (jours calendaires)</label>
+                        <input type="number"id="dureeArret" placeholder="Ex: 14" value="14">
+                    </div>
+                    <div class="lg:col-span-3 flex justify-center">
+                         <button id="calculateBtn" class="btn btn-primary mt-4">🚀 Lancer la simulation</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#00A1E4]">7. Carence CPAM & 8. Calcul SJR/IJSS</p>
-                        <p class="text-sm text-gray-600">Déterminer la carence et calculer le SJR (salaire rétabli si besoin) puis les IJSS brutes.</p>
+                
+                <div id="resultContainer" class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 hidden">
+                    <h3 class="text-xl font-semibold text-slate-800 dark:text-slate-50 mb-4">Résultats de la Simulation</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="carenceCard" class="bg-amber-100 border border-amber-300 p-4 rounded-lg">
+                            <h4 class="font-bold text-amber-800">🗓️ Carence & Indemnisation</h4>
+                            <p id="carenceResult" class="mt-2"></p>
+                        </div>
+                        <div id="sjrCard" class="bg-cyan-100 border border-cyan-300 p-4 rounded-lg">
+                            <h4 class="font-bold text-cyan-800">📊 Calcul du SJR</h4>
+                            <p id="sjrResult" class="mt-2"></p>
+                        </div>
+                        <div id="ijssCard" class="bg-emerald-100 border border-emerald-300 p-4 rounded-lg">
+                            <h4 class="font-bold text-emerald-800">💵 Montant des IJSS</h4>
+                            <p id="ijssResult" class="mt-2"></p>
+                        </div>
                     </div>
-                    <div class="text-center hidden md:block flow-arrow">→</div>
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#00A1E4]">9. Maintien & Subrogation</p>
-                        <p class="text-sm text-gray-600">Gérer le complément employeur et la perception des IJSS en cas de subrogation.</p>
-                    </div>
-                </div>
-                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                    <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-4 flow-step">
-                        <p class="font-bold text-lg text-[#F5A623]">10. Calcul des IJSS Nettes</p>
-                        <p class="text-sm text-gray-600">Finaliser en déduisant la CSG/CRDS (6.70%) des IJSS brutes pour le versement.</p>
+                     <div class="mt-6 card bg-slate-50 border border-slate-200">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-50">🧾 Impact et Logique Appliquée</h4>
+                        <p id="paieImpact" class="mt-2 text-slate-600 dark:text-slate-400"></p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="subrogation-prevoyance" class="my-12">
-            <h2 class="text-3xl font-bold text-center mb-2 text-gray-900">Qui Paie Quoi ? Le Rôle de la Subrogation et de la Prévoyance</h2>
-            <p class="text-center text-gray-600 mb-8">La rémunération du salarié en arrêt est souvent une composition de plusieurs sources.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                <div class="bg-white rounded-lg shadow-lg p-6 border-t-8 border-[#00A1E4]">
-                    <h3 class="text-2xl font-bold mb-2">CPAM</h3>
-                    <p class="font-semibold text-[#00A1E4]">Versement des IJSS</p>
-                    <p class="text-gray-600 mt-2">Indemnise le salarié (ou l'employeur si subrogation) selon les règles de la Sécurité Sociale (taux, plafond, carence).</p>
+        <!-- Section 2: Vue Comparative -->
+        <section id="comparison" class="mb-16">
+            <h2 class="section-title">⚖️ 2. Vue Comparative des Arrêts de Travail</h2>
+             <p class="mb-6 text-slate-600 dark:text-slate-400">
+                Pour mieux comprendre les différences fondamentales entre les types d'arrêts, cette section offre une comparaison visuelle. Les fiches ci-dessous résument les points clés de chaque situation. Le graphique interactif vous permet de comparer visuellement les taux d'indemnisation et les délais de carence.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Cards -->
+                <div class="card">
+                    <h3 class="font-bold text-lg mb-2"><span class="tag bg-red-100 text-red-700">Maladie 🤒</span></h3>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 3 jours</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> 7 jours (légal)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 50% du SJR</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
                 </div>
-                <div class="bg-white rounded-lg shadow-lg p-6 border-t-8 border-[#0077C0]">
-                    <h3 class="text-2xl font-bold mb-2">Employeur</h3>
-                    <p class="font-semibold text-[#0077C0]">Maintien de Salaire</p>
-                    <p class="text-gray-600 mt-2">Verse un complément pour atteindre un pourcentage du salaire (légal ou conventionnel). Peut percevoir les IJSS via la subrogation.</p>
+                <div class="card">
+                    <h3 class="font-bold text-lg mb-2"><span class="tag bg-yellow-100 text-yellow-700">AT / MP 👷</span></h3>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> 0 jour (jour AT payé)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 60% puis 80%</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> Mois précédent</p>
                 </div>
-                <div class="bg-white rounded-lg shadow-lg p-6 border-t-8 border-[#F5A623]">
-                    <h3 class="text-2xl font-bold mb-2">Prévoyance</h3>
-                    <p class="font-semibold text-[#F5A623]">Complément Additionnel</p>
-                    <p class="text-gray-600 mt-2">Le contrat collectif peut verser des indemnités complémentaires, souvent après le maintien employeur, pour garantir un revenu plus élevé.</p>
+                 <div class="card">
+                    <h3 class="font-bold text-lg mb-2"><span class="tag bg-purple-100 text-purple-700">Maternité 🤰</span></h3>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> N/A (selon CC)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
+                </div>
+                 <div class="card">
+                    <h3 class="font-bold text-lg mb-2"><span class="tag bg-purple-100 text-purple-700">Paternité 👨‍🍼</span></h3>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence SS:</strong> 0 jour</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Carence Employeur:</strong> N/A (selon CC)</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Taux IJSS:</strong> 100% du gain journalier</p>
+                    <p class="text-slate-700 dark:text-slate-300"><strong>Base SJR:</strong> 3 derniers mois</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-slate-800 dark:text-slate-50 mb-4 text-center">Comparaison des Caractéristiques Clés</h3>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <section id="conges-payes-acquisition" class="bg-white rounded-lg shadow-lg p-6 my-12">
-            <h2 class="text-3xl font-bold text-center mb-2 text-gray-900">Acquisition des Congés Payés pendant l'Arrêt Maladie</h2>
-            <p class="text-center text-gray-600 mb-6">Des évolutions récentes impactent l'acquisition des congés payés durant les arrêts maladie non professionnels.</p>
-            <div class="space-y-4 text-gray-700">
-                <p><strong class="text-[#0077C0]">Principe d'acquisition :</strong> Les périodes d'arrêt maladie non professionnel permettent désormais d'acquérir 2 jours ouvrables de congés payés par mois (ou 1,67 jours ouvrés), dans la limite de 24 jours ouvrables par période de référence (soit 4 semaines).</p>
-                <p><strong class="text-[#00A1E4]">Date d'entrée en vigueur :</strong> Cette règle est issue de la <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049449071" target="_blank" class="text-[#00A1E4] hover:underline">loi n° 2024-364 du 22 avril 2024</a>, avec une application rétroactive au 1er décembre 2009. Cela signifie que les droits peuvent être recalculés pour les arrêts passés.</p>
-                <p><strong class="text-[#F5A623]">Report des congés :</strong> Les congés payés acquis pendant un arrêt maladie peuvent être reportés sur une période de 15 mois à compter de la date à laquelle le salarié reçoit l'information sur ses droits. L'employeur a l'obligation d'informer le salarié de ses droits à congés payés dans un délai d'un mois après sa reprise du travail ou la réception des IJSS.</p>
-                <p class="text-sm text-gray-600">Pour plus de détails, consultez les informations sur <a href="https://www.service-public.fr/particuliers/vosdroits/F2258" target="_blank" class="text-gray-600 hover:underline">Service-Public.fr</a> ou <a href="https://www.ameli.fr/assure/droits-demarches/maladie-accident-travail-maladie-professionnelle/arret-travail-maladie/conges-payes-et-arret-maladie" target="_blank" class="text-gray-600 hover:underline">Ameli.fr</a>.</p>
-            </div>
-        </section>
+        <!-- Section 3: Concepts Clés & Ressources -->
+        <section id="concepts">
+             <h2 class="section-title">📚 3. Concepts Clés, Cas Particuliers & Ressources</h2>
+             <p class="mb-6 text-slate-600 dark:text-slate-400">
+                Explorez ici les notions plus complexes et les cas spécifiques comme la rechute ou le calcul du salaire rétabli. Chaque section est un résumé interactif des parties du guide, vous permettant d'approfondir un sujet à la demande. Vous y trouverez également les liens vers les ressources officielles.
+            </p>
+            <div class="space-y-4">
+                 <!-- Accordion Item : Congés Payés -->
+                <div class="card accordion-cp">
+                    <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
+                        <span>🗓️ Acquisition des Congés Payés pendant un Arrêt Maladie</span>
+                        <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
+                    </button>
+                    <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <p class="mb-4">Suite à la loi du 22 avril 2024, les arrêts maladie non professionnels ouvrent désormais droit à l'acquisition de congés payés, alignant le droit français sur le droit européen.</p>
+                        <h4 class="font-bold mt-4 mb-2">Règles d'Acquisition (depuis le 24/04/2024)</h4>
+                        <ul>
+                            <li><strong>Taux :</strong> Le salarié acquiert <strong>2 jours ouvrables</strong> de congés par mois d'arrêt.</li>
+                            <li><strong>Plafond :</strong> L'acquisition est limitée à <strong>24 jours ouvrables (4 semaines)</strong> par an pour cause de maladie non professionnelle.</li>
+                            <li><strong>Rétroactivité :</strong> La mesure est rétroactive pour les arrêts débutant à partir du 1er décembre 2009.</li>
+                        </ul>
+                        <h4 class="font-bold mt-4 mb-2">Délai pour poser les congés</h4>
+                        <ul>
+                             <li><strong>Obligation d'information :</strong> L'employeur doit informer le salarié de ses droits à congés acquis dans le mois suivant sa reprise.</li>
+                            <li><strong>Délai de report :</strong> Le salarié dispose de <strong>15 mois</strong> après avoir été informé pour prendre ces congés.</li>
+                        </ul>
+                         <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Pour plus de détails, consultez les sources officielles dans l'onglet "Ressources".</p>
+                    </div>
+                </div>
 
-        <section id="scenarios" class="bg-white rounded-lg shadow-lg p-6 my-12">
-            <h2 class="text-3xl font-bold text-center mb-2 text-gray-900">Mise en Pratique : Comparaison des Scénarios</h2>
-            <p class="text-center text-gray-600 mb-6">Visualisation des IJSS brutes totales versées par la CPAM pour différents cas de figure sur des périodes variées.</p>
-             <div class="chart-container h-96 max-h-[50vh]">
-                <canvas id="scenariosChart"></canvas>
+                <!-- Accordion Item 1 -->
+                <div class="card accordion-rechute">
+                    <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
+                        <span>🔄 La Rechute d'Accident du Travail / Maladie Professionnelle</span>
+                        <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
+                    </button>
+                    <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <p class="mb-4">Une rechute survient lorsqu'une nouvelle incapacité de travail est liée à un AT/MP déjà reconnu. Son traitement est similaire à l'arrêt initial (pas de carence CPAM), mais suit une procédure spécifique.</p>
+                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-center">
+                            <div class="text-center p-4 bg-slate-100 rounded-lg dark:bg-slate-700 dark:text-slate-300"><strong>1. Arrêt pour rechute</strong><br><small>L'employeur traite d'abord comme un arrêt maladie classique.</small></div>
+                            <div class="text-2xl text-slate-400 dark:text-slate-500">→</div>
+                            <div class="text-center p-4 bg-slate-100 rounded-lg dark:bg-slate-700 dark:text-slate-300"><strong>2. Décision CPAM</strong><br><small>La Caisse étudie le lien avec l'AT/MP initial.</small></div>
+                            <div class="text-2xl text-slate-400 dark:text-slate-500">→</div>
+                            <div class="text-center p-4 bg-green-100 rounded-lg dark:bg-green-900 dark:text-green-200"><strong>3. Requalification</strong><br><small>Si reconnue, l'employeur envoie une attestation rectificative. L'arrêt est traité comme un AT/MP (pas de carence, taux de 60%/80%).</small></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Accordion Item 2 -->
+                <div class="card accordion-sjr">
+                    <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
+                        <span>📈 Le Salaire Rétabli</span>
+                        <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
+                    </button>
+                    <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <p>Si le salarié a eu des absences non ou partiellement rémunérées (maladie, chômage partiel, etc.) pendant la période de référence, son salaire doit être "rétabli" pour le calcul des IJSS. L'employeur calcule le salaire que le salarié *aurait perçu* s'il avait travaillé normalement. Cette information est transmise via la DSN et utilisée par la CPAM pour un calcul juste des indemnités.</p>
+                        <p class="mt-2"><strong>Exemples d'absences nécessitant un salaire rétabli :</strong> embauche en cours de mois, arrêt maladie, congé maternité, AT, chômage partiel, congé sans solde.</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Référence: Article R.323-8 du Code de la Sécurité Sociale.</p>
+                    </div>
+                </div>
+                <!-- Accordion Item 3 -->
+                 <div class="card accordion-subrogation">
+                    <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
+                        <span>🤝 Subrogation et Prévoyance</span>
+                        <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
+                    </button>
+                    <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold mb-2">La Subrogation</h4>
+                        <p>L'employeur peut demander à percevoir les IJSS à la place du salarié. C'est une condition pour le maintien de salaire : le salaire maintenu doit être au moins égal aux IJSS. Cela permet d'assurer une continuité de revenu pour le salarié sur son bulletin de paie.</p>
+                        <h4 class="font-bold mt-4 mb-2">Le Complément Prévoyance</h4>
+                        <p>Lorsqu'un maintien de salaire partiel est prévu (ex: 80%) et que la subrogation cesse, un contrat de prévoyance collective peut prendre le relais. L'assureur verse un complément pour atteindre le pourcentage de maintien garanti par le contrat. Ce complément est à identifier en paie et est généralement soumis à la CSG/CRDS.</p>
+                    </div>
+                </div>
+                <!-- Accordion Item 4 -->
+                 <div class="card accordion-resources">
+                    <button class="w-full text-left font-semibold text-lg flex justify-between items-center accordion-toggle">
+                        <span>🌐 Ressources Officielles</span>
+                        <span class="transform transition-transform text-slate-500 dark:text-slate-400">▼</span>
+                    </button>
+                    <div class="accordion-content hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                       <ul class="list-disc list-inside space-y-2">
+                           <li><a href="https://www.ameli.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Ameli.fr :</strong></a> La référence pour les règles de la Sécurité Sociale.</li>
+                           <li><a href="https://www.service-public.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Service-Public.fr :</strong></a> Informations vulgarisées sur le droit du travail.</li>
+                           <li><a href="https://www.legifrance.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Légifrance :</strong></a> Accès direct au Code du Travail, Code de la Sécurité Sociale et aux jurisprudences.</li>
+                           <li><a href="https://boss.gouv.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Boss.gouv.fr :</strong></a> Le Bulletin Officiel de la Sécurité Sociale pour les règles d'application.</li>
+                           <li><a href="https://www.net-entreprises.fr" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400"><strong>Net-Entreprises.fr :</strong></a> Le portail pour la DSN et la subrogation.</li>
+                       </ul>
+                       <p class="text-sm mt-4 text-slate-500 dark:text-slate-400">Il est recommandé de toujours vérifier les conventions collectives qui peuvent prévoir des dispositions plus favorables.</p>
+                    </div>
+                </div>
             </div>
-            <p class="text-center mt-4 text-gray-600 text-sm">Ces montants illustrent uniquement la part de la CPAM (IJSS brutes) et ne tiennent pas compte du maintien de salaire employeur ou de la prévoyance.</p>
         </section>
 
     </main>
-    
-    <footer class="bg-gray-800 text-white p-8 mt-12">
-        <div class="container mx-auto text-center">
-            <h3 class="text-2xl font-bold mb-4">Ressources Indispensables</h3>
-            <p class="mb-6">Pour être incollable et vérifier vos informations, voici les sites officiels à consulter : 🤓</p>
-            <div class="flex flex-wrap justify-center items-center space-x-6 space-y-4 md:space-y-0">
-                <a href="https://www.ameli.fr" target="_blank" class="hover:text-[#00A1E4] transition-colors">🏥 Ameli.fr (Assurance Maladie)</a>
-                <a href="https://www.service-public.fr" target="_blank" class="hover:text-[#00A1E4] transition-colors">🇫🇷 Service-Public.fr (Droit du travail & Protection sociale)</a>
-                <a href="https://www.legifrance.gouv.fr/codes/id/LEGIARTI000030018895/2025-04-01/" target="_blank" class="hover:text-[#00A1E4] transition-colors">📖 Légifrance (Code du Travail)</a>
-                <a href="https://www.legifrance.gouv.fr/codes/id/LEGIARTI000006750316/2025-04-01/" target="_blank" class="hover:text-[#00A1E4] transition-colors">📖 Légifrance (Code de la Sécurité Sociale)</a>
-                <a href="https://www.net-entreprises.fr/" target="_blank" class="hover:text-[#00A1E4] transition-colors">💻 Net-Entreprises.fr (DSN & Subrogation)</a>
-            </div>
-            <p class="text-sm text-gray-400 mt-6">Pour les cas spécifiques et les évolutions, il est conseillé de consulter les jurisprudences pertinentes.</p>
+
+    <footer class="bg-slate-800 text-white mt-12 dark:bg-slate-950">
+        <div class="container mx-auto px-4 py-6 text-center text-slate-300 dark:text-slate-400">
+            <p>Outil interactif créé à partir du "Guide Complet sur le Calcul des IJSS".</p>
+            <p class="text-sm mt-1">Les calculs sont des estimations basées sur les règles générales et doivent être vérifiés. Les plafonds sont indicatifs (base 2024/2025).</p>
         </div>
     </footer>
 
     <script>
-        const FONT_COLOR = '#374151'; 
-        const GRID_COLOR = '#E5E7EB'; 
+        document.addEventListener('DOMContentLoaded', function() {
+            const SMIC_MENSUEL_BRUT_2025 = 1766.92; 
+            const PLAFOND_JOURNALIER_SS_2024 = 100.36; // This should be updated for 2025 if new data is available.
 
-        function wrapLabel(str, maxWidth) {
-            if (str.length <= maxWidth) {
-                return str;
-            }
-            const words = str.split(' ');
-            let lines = [];
-            let currentLine = words[0];
-            for (let i = 1; i < words.length; i++) {
-                if (currentLine.length + words[i].length + 1 < maxWidth) {
-                    currentLine += ' ' + words[i];
-                } else {
-                    lines.push(currentLine);
-                    currentLine = words[i];
-                }
-            }
-            lines.push(currentLine);
-            return lines;
-        }
+            const arretTypeSelect = document.getElementById('arretType');
+            const salaireRefInput = document.getElementById('salaireRef');
+            const ancienneteInput = document.getElementById('anciennete');
+            const dureeArretInput = document.getElementById('dureeArret');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resultContainer = document.getElementById('resultContainer');
 
-        const tooltipTitleCallback = (tooltipItems) => {
-            const item = tooltipItems[0];
-            let label = item.chart.data.labels[item.dataIndex];
-            if (Array.isArray(label)) {
-                return label.join(' ');
+            const carenceResultEl = document.getElementById('carenceResult');
+            const sjrResultEl = document.getElementById('sjrResult');
+            const ijssResultEl = document.getElementById('ijssResult');
+            const paieImpactEl = document.getElementById('paieImpact');
+            const ancienneteContainer = document.getElementById('ancienneteContainer');
+            
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const htmlElement = document.documentElement;
+
+            // Check for saved theme preference or system preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark' || (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                htmlElement.classList.add('dark');
+                document.body.classList.add('dark');
+                themeIcon.textContent = '🌙';
             } else {
-                return label;
+                themeIcon.textContent = '☀️';
             }
-        };
 
-        const defaultChartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: FONT_COLOR,
-                        font: { size: 14 }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        title: tooltipTitleCallback
-                    }
+            themeToggle.addEventListener('click', () => {
+                if (htmlElement.classList.contains('dark')) {
+                    htmlElement.classList.remove('dark');
+                    document.body.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    themeIcon.textContent = '☀️';
+                } else {
+                    htmlElement.classList.add('dark');
+                    document.body.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeIcon.textContent = '🌙';
                 }
-            },
-            scales: {
-                x: {
-                    ticks: { color: FONT_COLOR, font: { size: 12 } },
-                    grid: { color: GRID_COLOR }
-                },
-                y: {
-                    ticks: { color: FONT_COLOR, font: { size: 12 } },
-                    grid: { color: GRID_COLOR },
-                    beginAtZero: true
-                }
-            }
-        };
-        
-        const csgData = {
-            labels: ['IJSS Nettes Versées (93.3%)', 'Prélèvements CSG/CRDS (6.7%)'],
-            datasets: [{
-                data: [93.3, 6.7],
-                backgroundColor: ['#00A1E4', '#F5A623'],
-                borderColor: '#FFFFFF',
-                borderWidth: 2,
-                hoverOffset: 4
-            }]
-        };
+                updateChartColors(); // Update chart colors on theme change
+            });
 
-        new Chart(document.getElementById('csgChart'), {
-            type: 'doughnut',
-            data: csgData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                           color: FONT_COLOR,
-                           font: { size: 12 }
+            arretTypeSelect.addEventListener('change', () => {
+                if (arretTypeSelect.value === 'maladie') {
+                    ancienneteContainer.style.display = 'block';
+                } else {
+                    ancienneteContainer.style.display = 'none';
+                }
+            });
+            
+            calculateBtn.addEventListener('click', () => {
+                const type = arretTypeSelect.value;
+                const salaire = parseFloat(salaireRefInput.value) || 0;
+                const anciennete = parseInt(ancienneteInput.value) || 0;
+                const duree = parseInt(dureeArretInput.value) || 0;
+
+                let carenceSS = 0;
+                let carenceEmployeur = 0;
+                let sjr = 0;
+                let ijssBruteJournaliere = 0; // This will be the average for display or specific for non-AT/MP
+                let tauxIJSS = 0;
+                let baseCalculSJR = '';
+                let plafondSJR = Infinity;
+                let plafondIJSS = Infinity;
+                let paieImpactText = '';
+                let totalIJSSBrutes = 0;
+                let totalIJSSNettes = 0;
+                let joursIndemnisesCPAM_ATMP = 0; // Declared here for wider scope
+
+                switch (type) {
+                    case 'maladie':
+                        carenceSS = 3;
+                        if (anciennete >= 1) carenceEmployeur = 7;
+                        
+                        baseCalculSJR = `((${salaire.toFixed(2)}€ x 3) / 91,25)`;
+                        sjr = (salaire * 3) / 91.25;
+                        
+                        // Plafond pour maladie non professionnelle
+                        plafondSJR = 1.4 * SMIC_MENSUEL_BRUT_2025; // Plafond mensuel
+                        let salairePlafonneMaladie = Math.min(salaire, plafondSJR);
+                        sjr = (salairePlafonneMaladie * 3) / 91.25;
+
+                        tauxIJSS = 0.50;
+                        ijssBruteJournaliere = sjr * tauxIJSS; // Daily rate for display
+
+                        let joursIndemnisesCPAMMaladie = Math.max(0, duree - carenceSS);
+                        totalIJSSBrutes = joursIndemnisesCPAMMaladie * ijssBruteJournaliere;
+                        
+                        paieImpactText = `Pour une maladie non pro, l'employeur déduit ${duree} jours d'absence. La CPAM indemnise à partir du 4ème jour. Le salaire de référence est plafonné à 1,4 fois le SMIC (règle applicable au 1er avril 2025).`;
+                        if (anciennete >= 1) {
+                             paieImpactText += ` Avec ${anciennete} an(s) d'ancienneté, un maintien de salaire légal (90% puis 2/3) s'applique après 7 jours de carence. L'employeur peut opter pour la subrogation.`;
+                        } else {
+                            paieImpactText += ` Moins d'un an d'ancienneté, pas de maintien légal. Le salarié perçoit les IJSS directement (sauf si CC plus favorable).`;
                         }
+                        break;
+                    
+                    case 'at':
+                    case 'mp':
+                        carenceSS = 0; // Jour de l'accident à la charge de l'employeur
+                        carenceEmployeur = 0;
+                        
+                        baseCalculSJR = `(${salaire.toFixed(2)}€ / 30,42)`;
+                        sjr = salaire / 30.42;
+
+                        // joursIndemnisesCPAM_ATMP est le nombre de jours indemnisés par la CPAM (duree - 1)
+                        joursIndemnisesCPAM_ATMP = Math.max(0, duree - 1); 
+
+                        // Jours à 60% : les 27 premiers jours indemnisés par la CPAM (correspondant aux jours 2 à 28 de l'arrêt)
+                        let jours60Percent = Math.min(joursIndemnisesCPAM_ATMP, 27);
+                        // Jours à 80% : à partir du 28ème jour indemnisé par la CPAM (correspondant au 29ème jour de l'arrêt)
+                        let jours80Percent = Math.max(0, joursIndemnisesCPAM_ATMP - 27);
+
+                        let gainJournalierNet = sjr * (1 - 0.21);
+                        let ijssDaily60 = Math.min(sjr * 0.60, gainJournalierNet);
+                        let ijssDaily80 = Math.min(sjr * 0.80, gainJournalierNet);
+
+                        totalIJSSBrutes = (jours60Percent * ijssDaily60) + (jours80Percent * ijssDaily80);
+                        
+                        let typeText = type === 'at' ? "un accident du travail" : "une maladie professionnelle";
+                        paieImpactText = `Pour ${typeText}, le jour de l'accident/constatation est payé par l'employeur. Les IJSS sont versées dès le lendemain sans carence. Le taux est de 60% pour les jours 2 à 28 de l'arrêt (soit les 27 premiers jours indemnisés par la CPAM), puis de 80% à partir du 29ème jour de l'arrêt. Le maintien de salaire est souvent total via la convention collective, avec subrogation.`;
+                        break;
+                    
+                    case 'maternite':
+                    case 'paternite':
+                        carenceSS = 0;
+                        carenceEmployeur = 0;
+                        
+                        let salairePlafPMSS = Math.min(salaire, 3864); // Plafond PMSS 2024 - to be updated for 2025
+                        let salaireNetReconstitué = (salairePlafPMSS * 3) * (1 - 0.21);
+                        sjr = salaireNetReconstitué / 91.25;
+                        baseCalculSJR = `((min(${salaire.toFixed(2)}€, PMSS) x 3) x (1-21%)) / 91,25`;
+                        
+                        ijssBruteJournaliere = Math.min(sjr, PLAFOND_JOURNALIER_SS_2024); // Daily rate for display
+                        tauxIJSS = 1;
+
+                        let joursIndemnisesCPAMMaternitePaternite = duree;
+                        totalIJSSBrutes = joursIndemnisesCPAMMaternitePaternite * ijssBruteJournaliere;
+
+                        let congeText = type === 'maternite' ? "un congé maternité" : "un congé paternité";
+                        paieImpactText = `Pour ${congeText}, il n'y a pas de délai de carence. L'indemnisation est égale au gain journalier de base, calculé sur les salaires plafonnés au PMSS, et l'IJSS journalière est elle-même plafonnée. Le maintien à 100% avec subrogation est très fréquent via les conventions collectives.`;
+                        break;
+                }
+                
+                totalIJSSNettes = totalIJSSBrutes * (1 - 0.067);
+                
+                carenceResultEl.innerHTML = `
+                    <strong>Carence CPAM:</strong> ${carenceSS} jours<br>
+                    <strong>Carence Employeur (légale):</strong> ${carenceEmployeur} jours<br>
+                    <strong>Jours indemnisés par la CPAM:</strong> ${ (type === 'at' || type === 'mp') ? joursIndemnisesCPAM_ATMP : Math.max(0, duree - carenceSS)} jours
+                `;
+                
+                sjrResultEl.innerHTML = `
+                    <strong>Base de calcul:</strong> ${baseCalculSJR}<br>
+                    <strong>SJR brut:</strong> ${sjr.toFixed(2)} €<br>
+                    ${(type === 'at' || type === 'mp') ? `<strong>Gain Journalier Net:</strong> ${gainJournalierNet.toFixed(2)} €` : `<strong>Taux appliqué:</strong> ${(tauxIJSS * 100).toFixed(0)}%`}
+                `;
+
+                ijssResultEl.innerHTML = `
+                    ${(type === 'at' || type === 'mp') ? 
+                        `<strong>IJSS journalière (J2-J28 de l'arrêt):</strong> ${ijssDaily60.toFixed(2)} €<br>
+                         <strong>IJSS journalière (Dès J29 de l'arrêt):</strong> ${ijssDaily80.toFixed(2)} €<br>` : 
+                        `<strong>IJSS brute / jour:</strong> ${ijssBruteJournaliere.toFixed(2)} €<br>`
+                    }
+                    <strong>Total IJSS brutes:</strong> ${totalIJSSBrutes.toFixed(2)} €<br>
+                    <strong>Total IJSS nettes (estimé):</strong> <span class="font-bold">${totalIJSSNettes.toFixed(2)} €</span>
+                `;
+
+                paieImpactEl.textContent = paieImpactText;
+
+                resultContainer.classList.remove('hidden');
+            });
+
+            let comparisonChart; // Declare chart variable globally or in a scope accessible by updateChartColors
+
+            function initializeChart() {
+                const chartColors = getChartColors();
+                const comparisonChartCtx = document.getElementById('comparisonChart').getContext('2d');
+                if (comparisonChart) {
+                    comparisonChart.destroy(); // Destroy existing chart before creating a new one
+                }
+                comparisonChart = new Chart(comparisonChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Carence SS (jours)', 'Taux IJSS Initial (%)'],
+                        datasets: [
+                            {
+                                label: 'Maladie',
+                                data: [3, 50],
+                                backgroundColor: chartColors.maladie.backgroundColor,
+                                borderColor: chartColors.maladie.borderColor,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'AT / MP',
+                                data: [0, 60],
+                                backgroundColor: chartColors.atmp.backgroundColor,
+                                borderColor: chartColors.atmp.borderColor,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Maternité / Paternité',
+                                data: [0, 100],
+                                backgroundColor: chartColors.maternityPaternity.backgroundColor,
+                                borderColor: chartColors.maternityPaternity.borderColor,
+                                borderWidth: 1
+                            }
+                        ]
                     },
-                    tooltip: {
-                         callbacks: {
-                            title: tooltipTitleCallback
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Carence et Taux d\'Indemnisation par Type d\'Arrêt',
+                                color: getComputedStyle(document.body).color // Dynamic text color
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.x !== null) {
+                                            label += context.parsed.x;
+                                            if (context.label.includes('Taux')) {
+                                                label += '%';
+                                            } else {
+                                                label += ' jours';
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: getComputedStyle(document.body).color // Dynamic tick color
+                                },
+                                grid: {
+                                    color: htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: getComputedStyle(document.body).color // Dynamic tick color
+                                },
+                                grid: {
+                                    color: htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                                }
+                            }
                         }
                     }
+                });
+            }
+
+            function getChartColors() {
+                if (htmlElement.classList.contains('dark')) {
+                    return {
+                        maladie: { backgroundColor: 'rgba(252, 165, 165, 0.7)', borderColor: 'rgb(252, 165, 165)' }, // red-300
+                        atmp: { backgroundColor: 'rgba(253, 224, 71, 0.7)', borderColor: 'rgb(253, 224, 71)' }, // yellow-300
+                        maternityPaternity: { backgroundColor: 'rgba(221, 214, 254, 0.7)', borderColor: 'rgb(221, 214, 254)' } // indigo-300
+                    };
+                } else {
+                    return {
+                        maladie: { backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgb(239, 68, 68)' }, // red-500
+                        atmp: { backgroundColor: 'rgba(245, 158, 11, 0.7)', borderColor: 'rgb(245, 158, 11)' }, // amber-500
+                        maternityPaternity: { backgroundColor: 'rgba(168, 85, 247, 0.7)', borderColor: 'rgb(168, 85, 247)' } // purple-500
+                    };
                 }
             }
-        });
 
-        const rateComparisonData = {
-            labels: [
-                wrapLabel('Maladie Non Professionnelle', 16),
-                wrapLabel('AT/MP (< 29 jours)', 16),
-                wrapLabel('AT/MP (> 28 jours)', 16),
-                wrapLabel('Maternité / Paternité', 16)
-            ],
-            datasets: [{
-                label: 'Taux d\'indemnisation (% du SJR)',
-                data: [50, 60, 80, 100],
-                backgroundColor: ['#00A1E4', '#0077C0', '#005082', '#F5A623'],
-                borderColor: ['#00A1E4', '#0077C0', '#005082', '#F5A623'],
-                borderWidth: 1,
-                borderRadius: 5,
-                barThickness: 50
-            }]
-        };
-        new Chart(document.getElementById('rateComparisonChart'), {
-            type: 'bar',
-            data: rateComparisonData,
-            options: { ...defaultChartOptions,
-                scales: {
-                   ...defaultChartOptions.scales,
-                    y: {
-                       ...defaultChartOptions.scales.y,
-                        ticks: {
-                            ...defaultChartOptions.scales.y.ticks,
-                            callback: function(value) { return value + '%' }
-                        }
-                    }
-                }
+            function updateChartColors() {
+                const chartColors = getChartColors();
+                comparisonChart.data.datasets[0].backgroundColor = chartColors.maladie.backgroundColor;
+                comparisonChart.data.datasets[0].borderColor = chartColors.maladie.borderColor;
+                comparisonChart.data.datasets[1].backgroundColor = chartColors.atmp.backgroundColor;
+                comparisonChart.data.datasets[1].borderColor = chartColors.atmp.borderColor;
+                comparisonChart.data.datasets[2].backgroundColor = chartColors.maternityPaternity.backgroundColor;
+                comparisonChart.data.datasets[2].borderColor = chartColors.maternityPaternity.borderColor;
+                
+                // Update text and grid colors
+                comparisonChart.options.plugins.title.color = getComputedStyle(document.body).color;
+                comparisonChart.options.scales.x.ticks.color = getComputedStyle(document.body).color;
+                comparisonChart.options.scales.y.ticks.color = getComputedStyle(document.body).color;
+                comparisonChart.options.scales.x.grid.color = htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                comparisonChart.options.scales.y.grid.color = htmlElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+                comparisonChart.update();
             }
-        });
 
-        const scenariosData = {
-            labels: [
-                wrapLabel('Amandine (Maladie 7j)', 16), 
-                wrapLabel('Bastien (Maladie 14j)', 16), 
-                wrapLabel('Clara (Maladie 7j, Conv.)', 16), 
-                wrapLabel('David (AT 7j)', 16),
-                wrapLabel('Élise (MP 14j)', 16),
-                wrapLabel('François (Paternité 14j)', 16)
-            ],
-            datasets: [{
-                label: 'Total IJSS Brutes Versées par la CPAM (€)',
-                data: [131.52, 452.10, 197.28, 331.38, 897.52, 981.68],
-                backgroundColor: ['#00A1E4', '#00A1E4', '#00A1E4', '#0077C0', '#005082', '#F5A623'],
-                borderWidth: 1,
-                borderRadius: 5
-            }]
-        };
-        new Chart(document.getElementById('scenariosChart'), {
-            type: 'bar',
-            data: scenariosData,
-            options: defaultChartOptions
+            initializeChart(); // Initialize chart on page load
+            
+            const accordionToggles = document.querySelectorAll('.accordion-toggle');
+            accordionToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const content = toggle.nextElementSibling;
+                    const arrow = toggle.querySelector('span:last-child');
+                    content.classList.toggle('hidden');
+                    arrow.classList.toggle('rotate-180');
+                });
+            });
+
         });
     </script>
-
 </body>
 </html>
